@@ -22,6 +22,15 @@ The `ProxyPool` class offers such services:
   **gevent**)
 * Validate proxies in the database very fast
 
+### Dependency
+This project depends these:
+
+* python requests
+* pyyaml
+* pyredis
+* lxml
+* redis server  
+
 ### An example to implement a proxy server
 Here is an example to implement a proxy server which uses **Nginx** as a reverse
 proxy server to provide a unified proxy address and uses **Gunicorn** server to
