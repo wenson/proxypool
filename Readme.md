@@ -29,6 +29,7 @@ This project depends these:
 * pyaml
 * pyredis
 * lxml
+* gevent  
 * redis server  
 
 ### An example to implement a proxy server
