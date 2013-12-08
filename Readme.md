@@ -16,13 +16,13 @@ difficulty.
 ### Services the project offers
 The `ProxyPool` class offers such services:
 
-* Get one http proxy or many randomly according to the response time of the
-  proxy randomly 
+* Get one http proxy or many according to the response time of the proxy
+  randomly  
 * Retrieve proxies from Internet very fast (based on the functionality of
   **gevent**)
 * Validate proxies in the database very fast
 
-### Example to implement a proxy server
+### An example to implement a proxy server
 Here is an example to implement a proxy server which uses **Nginx** as a reverse
 proxy server to provide a unified proxy address and uses **Gunicorn** server to
 handle the requests that *Nginx* transfers to.
@@ -45,7 +45,7 @@ srever {
 ```
 
 2 write a handler to handle the request:  
-Assume that the file is '/home/flyer/myapp/app.py' and the contents are:
+Assume that the file is `/home/flyer/myapp/app.py` and the contents are:
 
 ```python
 #coding: utf-8
