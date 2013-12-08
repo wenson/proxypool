@@ -26,7 +26,7 @@ The `ProxyPool` class offers such services:
 This project depends these:
 
 * python requests
-* pyyaml
+* pyaml
 * pyredis
 * lxml
 * redis server  
