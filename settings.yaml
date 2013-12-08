@@ -9,7 +9,7 @@ HEADERS:
     Accept-Language: en-US,en;q=0.8
     Connection: keep-alive
     Host: ''
-    Referer: http://dict.youdao.com/
+    Referer: http://www.baidu.com
     User-Agent: Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.114 Safari/537.36
 
 
