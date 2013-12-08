@@ -2,11 +2,11 @@
 This project provides a http proxy pool for use when you want a http proxy
 server. All proxies which could be retrieved from Internet pages or from other
 approaches could be managed by the `ProxyPool` class and the class offers a
-unified interface to get one proxy or many.
+unified interface to get one proxy or many.  
 This project utilizes *redis* to store proxies, uses *gevent* to retrieve
 proxies from Internet pages and to validate the usability of those proxies, so
 it could be very fast to get one proxy or many from the database and to validate
-proxies in the database.
+proxies in the database.  
 And this project uses *yaml* to manage the configuratoin file, which is very
 expressive and easy to learn and to use. You could change the default
 configuration very easily, add new pages which contains proxies and
@@ -28,7 +28,7 @@ proxy server to provide a unified proxy address and uses *Gunicorn* server to
 handle the requests that *Nginx* transfers to.
 According to [Gunicorn](http://gunicorn.org/), do the following operations:
 
-1. modify Nginx conf file and add the following:
+1 modify Nginx conf file and add the following:
 
 ```python
 srever {
@@ -44,7 +44,7 @@ srever {
 }
 ```
 
-2. write a handler to handle the request:
+2 write a handler to handle the request:
 Assume that the file is '/home/flyer/myapp/app.py' and the contents are:
 
 ```python
@@ -75,13 +75,14 @@ def myhandler(env, start_response):
 	return 'Hi, this is just a test and the content is %s' % (res.content,)
 ```
 
-3. run Gunicorn server:
+3 run Gunicorn server:
 
 ```shell
 $ cd /home/flyer/myapp
 $ gunicorn -w 4 -k gevent app:myhandler
+```
 
-4. test:
+4 test:
 In *ipython*, execute the following statements:
 
 ```python
