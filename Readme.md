@@ -30,7 +30,16 @@ This project depends these:
 * pyredis
 * lxml
 * gevent  
-* redis server  
+* redis server
+
+### Usage
+1. Edit `settings.yaml` and add sites including proxies in the `PROXY_SITES`
+field.
+2. Use `ProxyPool().crawl_proxies()` to retrieve proxies from Internet.
+3. Use `ProxyPool().validate_proxies()` to validate the availability of proxies
+retrieved.
+4. Use `ProxyPool().get_one()` or `ProxyPool().get_many()` to get a proxy from
+the local database.
 
 ### An example to implement a proxy server
 Here is an example to implement a proxy server which uses **Nginx** as a reverse
