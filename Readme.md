@@ -50,7 +50,7 @@ According to [Gunicorn](http://gunicorn.org/), do the following operations:
 1 modify Nginx conf file and add the following:  
 
 ```python
-srever {
+server {
   listen 9000;
   servername localhost;
 
