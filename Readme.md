@@ -12,7 +12,7 @@
 $ pip3 install -r requirements.txt
 ```
 
-此外系统中还需要安装 redis-server。
+此外系统中还需要安装 redis-server。  
 
 2、获取验证代理
 在项目根目录下，执行:
@@ -83,8 +83,9 @@ $ python3.3 handler_800* &
 插件，然后通过 POST 方法请求 http://127.0.0.1:9000/proxylist 来查看返回结果。
 
 ### 其他文档
-1、[API 使用文档](/doc/API.md)  
-2、[项目设计文档](/doc/design.md)
+1、[API 使用文档](/proxypool/doc/API.md)
+
+2、[项目设计文档](/proxypool/doc/design.md)
 
 ### 问题反馈
 可随时向我 (zhangyifei@baixing.com) 反馈使用该项目过程中遇到的问题。
