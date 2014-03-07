@@ -1,17 +1,44 @@
-RDB: 3
-DB_ZPROXY: zproxy
-MAX_CONCURRENCY: 20
-INIT_VALUE: 100
-WRONG_VALUE: 10000
-HEADERS:
+STORE:
+  RDB: 3   # 代理存储在 redis#3 数据库中
+  TRY: 3   # 连接 redis 数据库重试次数
+  TIME_WAIT: 5
+  SPROXY_ALL: sproxy_all    # 代理以 sets 方式存储原始 proxy，key 是 proxy
+  SPROXY_ANON: sproxy_anon    # 代理以 sets 方式存储匿名 proxy，key 是 proxy
+
+TARGET:
+  ALL:
+    URL: http://www.baidu.com
+    DB_PROXY: zproxy_all
+    DB_MTIME: mtime_all    # 上次更新时间
+    VALIDATE: '百度'
+  '58':
+    URL: http://www.58.com
+    DB_PROXY: zproxy_58
+    DB_MTIME: mtime_58
+    VALIDATE: '58同城'
+  GANJI:
+    URL: http://www.ganji.com
+    DB_PROXY: zproxy_ganji
+    DB_MTIME: mtime_ganji
+    VALIDATE: '赶集'
+
+URL:
+  REFLECT: http://httpbin.org/ip
+
+CRAWL:
+  HEADERS:
     Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
     Accept-Encoding: gzip,deflate,sdch
     Accept-Language: en-US,en;q=0.8
     Connection: keep-alive
-    Host: ''
     Referer: http://www.baidu.com
     User-Agent: Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.114 Safari/537.36
 
+
+CONCURRENT:
+  PROXY_GETTER: 100    # 从网上抓取代理的最大并发线程数
+  PROXY_FILTER: 100    # 过滤出匿名代理的最大并发线程数
+  PROXY_VALID: 10    # 验证代理的可用性的最大并发线程数 
 
 PROXY_SITES:
   http://www.site-digger.com/html/articles/20110516/proxieslist.html:
@@ -25,12 +52,57 @@ PROXY_SITES:
     rules:
       - //tr[@data-type='anonymous'] | //tr[@data-type='high']
       - .//td,1,2
+    proxies:    # 与翻墙抓取这些代理相关
+      http: ''
+      https: ''
+
+  http://proxy.com.ru/gaoni:
+    freq: 600    # 更新频率,单位 s
+    rules:
+      - //table[@bordercolor='#CCCCCC'][last()-1]//tr[position()>1]    # 包含 ip,port 的节点
+      - ./td,2,3    # 对应 ip 和 port
     proxies:
       http: ''
       https: ''
 
-TEST_TIMEOUT: 5
-TEST_SITES:
-  - http://www.baidu.com
-  - http://www.163.com
-  - http://www.hao123.com
+  http://proxy.com.ru/niming:
+    freq: 600    # 更新频率,单位 s
+    rules:
+      - //table[@bordercolor='#CCCCCC'][last()-1]//tr[position()>1]    # 包含 ip,port 的节点
+      - ./td,1,2    # 对应 ip 和 port
+    proxies:
+      http: ''
+      https: ''
+
+  http://www.proxy360.cn/Proxy:
+    freq: -1    # 未知的更新频率
+    rules:
+      - //div[@name='list_proxy_ip']/div[1]    # 包含 ip, port 的节点
+      - ./span[1],./span[2],./span[3],proxy360    # 对应 ip、port、是否匿名
+    proxies:
+      http: ''
+      https: ''
+
+  http://cn-proxy.com/archives/218:
+    freq: -1    # 未知的更新频率
+    rules:
+      - //table/tbody/tr    # 包含 ip, port 的节点
+      - ./td[1],./td[2],./td[3],cn-proxy    # 对应 ip、port、是否匿名
+    proxies:
+      http: ''
+      https: ''
+
+  # http://www.cnproxy.com/proxy1.html:
+  #   freq: -1
+  #   rules:
+  #     - //table[last()]/tr[position()>1]    # 包含 ip, port 的节点
+  #     - ./td,
+
+VALIDATE:
+  INIT_VALUE: 20
+  TIMEOUT_VALID: 10
+  TIME_EXCEPTION: 100000
+
+LOCAL_IP:
+  TIMEOUT: 10
+  TRY: 3

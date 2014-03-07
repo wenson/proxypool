@@ -1,119 +1,90 @@
-### Profile
-This project provides a http proxy pool for use when you want a http proxy
-server. All proxies which could be retrieved from Internet pages or from other
-approaches could be managed by the `ProxyPool` class and the class offers a
-unified interface to get one proxy or many.  
-This project utilizes **redis** to store proxies, uses **gevent** to retrieve
-proxies from Internet pages and to validate the usability of those proxies, so
-it could be very fast to get one proxy or many from the database and to validate
-proxies in the database.  
-And this project uses **yaml** to manage the configuratoin file, which is very
-expressive and easy to learn and to use. You could change the default
-configuration very easily, add new pages which contains proxies and
-corresponding rules for parsing the pages to retrieve the proxies without much
-difficulty.
+### 目的
+解决抓取站点对访问频率的限制问题，通过匿名代理访问目标站点。
 
-### Services the project offers
-The `ProxyPool` class offers such services:
+### 功能
+通过一个 HTTP API 提供匿名代理列表。
 
-* Get one http proxy or many according to the response time of the proxy
-  randomly  
-* Retrieve proxies from Internet very fast (based on the functionality of
-  **gevent**)
-* Validate proxies in the database very fast
+### 配置
+1、安装项目的依赖
+与 python 相关的依赖 (注意该项目使用 python3.3):
 
-### Dependency
-This project depends these:
+```shell
+$ pip3 install -r requirements.txt
+```
 
-* python requests
-* pyaml
-* pyredis
-* lxml
-* gevent  
-* redis server
+此外系统中还需要安装 redis-server。
 
-### Usage
-1. Edit `settings.yaml` and add sites including proxies in the `PROXY_SITES`
-field.
-2. Use `ProxyPool().crawl_proxies()` to retrieve proxies from Internet.
-3. Use `ProxyPool().validate_proxies()` to validate the availability of proxies
-retrieved.
-4. Use `ProxyPool().get_one()` or `ProxyPool().get_many()` to get a proxy from
-the local database.
+2、获取验证代理
+在项目根目录下，执行:
 
-### An example to implement a proxy server
-Here is an example to implement a proxy server which uses **Nginx** as a reverse
-proxy server to provide a unified proxy address and uses **Gunicorn** server to
-handle the requests that *Nginx* transfers to.
-According to [Gunicorn](http://gunicorn.org/), do the following operations:
+```shell
+$ python3.3 proxypool.py
+```
 
-1 modify Nginx conf file and add the following:  
+3、配置 nginx
+一个简单的 nginx.conf 形式:
 
 ```python
-server {
-  listen 9000;
-  servername localhost;
+worker_processes  1;
 
-  location / {
-    proxy_pass http://127.0.0.1:8000;
-	proxy_set_header Host $host;
-	proxy_set_header X-Real-IP $remote_addr;
-	proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-  }
+events {
+    worker_connections  1024;
+}
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    sendfile        on;
+
+    keepalive_timeout  65;
+
+	upstream frontends {
+	    server 127.0.0.1:8000;
+		server 127.0.0.1:8001;
+		server 127.0.0.1:8002;
+		server 127.0.0.1:8003;
+		server 127.0.0.1:8004;
+	}
+
+	server {
+	    listen 9000;
+		server_name localhost;
+
+		location / {
+			proxy_pass http://frontends;
+			proxy_set_header Host $host;
+			proxy_set_header X-Real-IP $remote_addr;
+			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+			proxy_set_header X-Forwarded-Proto $scheme;
+		}
+	}	
 }
 ```
 
-2 write a handler to handle the request:  
-Assume that the file is `/home/flyer/myapp/app.py` and the contents are:
-
-```python
-#coding: utf-8
-
-"""Uses proxies to crawl the Internet.
-"""
-
-import requests
-
-from proxypool import ProxyPool
-
-def myhandler(env, start_response):
-	proxy_pool = ProxyPool()
-	a_proxy = proxy_pool.get_one()
-
-	url_scheme = env['wsgi.url_scheme']
-	host = env['HTTP_HOST']
-	path = env['RAW_URI']
-	url = '%s://%s%s' % (url_scheme, host, path)
-	proxies = {'http': a_proxy,}
-	res = requests.get(url, proxies=proxies)
-
-	start_response("200 OK", [
-	  ('Content-Type', 'text/plain'),
-	])
-
-	return 'Hi, this is just a test and the content is %s' % (res.content,)
-```
-
-3 run Gunicorn server:  
+启动 nginx:
 
 ```shell
-$ cd /home/flyer/myapp
-$ gunicorn -w 4 -k gevent app:myhandler
+# nginx -t
+# nginx &
 ```
 
-4 test:  
-In *ipython*, execute the following statements:
+4、启动 handler  
+在该项目目录下，运行:
 
-```python
-[1] import requests
-[2] proxies = {'http': 'http://localhost:9000'}
-[3] url = 'http://www.baidu.com'
-[4] res = resquests.get(url, proxies=proxies)
-[5] res.content # to see if it starts with the statement 'Hi, this is just a test ....' 
+```shell
+$ cd handlers
+$ python3.3 handler_800* &
 ```
 
-<br>
-If you want to learn more about *proxy server* and you could read in Chinese,
-my blog
-[proxy server 简述](http://flyer103.diandian.com/post/2013-12-03/40060317449)
-may do you a favor.
+5、测试
+在 chrome 中下载
+[Postman](https://chrome.google.com/webstore/detail/postman-rest-client/fdmmgilgnpjigdojojpjoooidkmcomcm?utm_source=chrome-ntp-launcher)
+插件，然后通过 POST 方法请求 http://127.0.0.1:9000/proxylist 来查看返回结果。
+
+### 其他文档
+1、[API 使用文档](/doc/API.md)  
+2、[项目设计文档](/doc/design.md)
+
+### 问题反馈
+可随时向我 (zhangyifei@baixing.com) 反馈使用该项目过程中遇到的问题。
